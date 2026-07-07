@@ -1,0 +1,54 @@
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ===== Virtual Environment =====
+venv/
+.venv/
+env/
+.env
+
+# ===== ChromaDB (runtime vector database) =====
+chroma_db/
+
+# ===== Runtime data (user DB, etc.) =====
+data/configs/auth.db
+
+# ===== Claude Code local settings =====
+.claude/
+
+models/
+
+docs/*.md
+docs/*.pdf
+
+
+# ===== Screenshots =====
+*.png
+*.jpg
+*.jpeg
+# Docs images are part of the project
+!docs/*.png
+!docs/*.jpg
+!docs/*.jpeg
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+*.mp4
+*.mp3
+

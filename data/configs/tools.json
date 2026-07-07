@@ -1,0 +1,442 @@
+[
+  {
+    "name": "query_product_spec",
+    "description": "查询产品详细技术参数、规格和价格。不提供型号时返回全部产品列表",
+    "intents": [
+      "产品参数查询",
+      "产品对比咨询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/products/{model}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "产品型号，如 X2000-Pro, K-500S。不填则返回全部产品"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_price",
+    "description": "查询产品当前报价和批量折扣信息",
+    "intents": [
+      "销售报价咨询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/pricing/{model}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [
+        "quantity"
+      ],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "产品型号"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "采购数量"
+        }
+      },
+      "required": [
+        "model"
+      ]
+    }
+  },
+  {
+    "name": "query_project_progress",
+    "description": "查询项目当前进度、里程碑完成情况和下一步计划",
+    "intents": [
+      "项目进度查询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/projects/{project_id}/progress",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "description": "项目编号，如 PRJ2026-001。不填则返回全部项目"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "create_repair_ticket",
+    "description": "为客户创建售后维修工单",
+    "intents": [
+      "故障报修"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "POST",
+      "url_template": "http://localhost:8000/mock/api/tickets",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": [
+        "device_sn",
+        "fault_description",
+        "customer_name",
+        "contact_phone"
+      ]
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "device_sn": {
+          "type": "string",
+          "description": "设备序列号(SN)"
+        },
+        "fault_description": {
+          "type": "string",
+          "description": "故障现象描述"
+        },
+        "customer_name": {
+          "type": "string",
+          "description": "客户联系人姓名"
+        },
+        "contact_phone": {
+          "type": "string",
+          "description": "联系电话"
+        }
+      },
+      "required": [
+        "device_sn",
+        "fault_description",
+        "contact_phone"
+      ]
+    }
+  },
+  {
+    "name": "query_invoice_status",
+    "description": "查询发票开具进度和状态。不提供发票号时返回全部发票",
+    "intents": [
+      "发票开具查询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/invoices/{invoice_id}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "invoice_id": {
+          "type": "string",
+          "description": "发票号，不填则返回全部发票"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_payment_status",
+    "description": "查询付款到账状态和进度",
+    "intents": [
+      "付款进度查询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/payments/{reference_no}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "reference_no": {
+          "type": "string",
+          "description": "付款流水号或合同号"
+        }
+      },
+      "required": [
+        "reference_no"
+      ]
+    }
+  },
+  {
+    "name": "query_purchase_order",
+    "description": "查询采购订单状态、交期和物流信息",
+    "intents": [
+      "采购订单查询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/orders/{order_id}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "description": "采购订单号，如 PO20240601"
+        }
+      },
+      "required": [
+        "order_id"
+      ]
+    }
+  },
+  {
+    "name": "query_supplier",
+    "description": "查询合格供应商名录和评估信息",
+    "intents": [
+      "供应商管理"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/suppliers",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [
+        "category",
+        "grade"
+      ],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "供应品类，如 电子元器件/机械加工/包装材料"
+        },
+        "grade": {
+          "type": "string",
+          "description": "供应商等级: A/B/C"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_sales_data",
+    "description": "查询各月销售额、按区域/产品的销售分布，用于生成销售图表和趋势分析",
+    "intents": [
+      "销售图表"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/sales/monthly",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [
+        "year",
+        "months"
+      ],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "type": "string",
+          "description": "查询年份，如 2026"
+        },
+        "months": {
+          "type": "integer",
+          "description": "查询月数，默认6"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_sales_breakdown",
+    "description": "查询销售额按区域或产品的分布占比",
+    "intents": [
+      "销售图表"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/sales/breakdown",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [
+        "by"
+      ],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "by": {
+          "type": "string",
+          "description": "分布维度: region(区域) 或 product(产品)"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_contract",
+    "description": "查询合同信息、条款内容和签订状态。不提供合同号时返回全部合同列表",
+    "intents": [
+      "合同条款查询"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/contracts/{contract_id}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "contract_id": {
+          "type": "string",
+          "description": "合同编号，如 CT2026-001。不填则返回全部合同"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "query_oa_tasks",
+    "description": "查询当前用户的OA待办任务列表，包括审批和任务。不提供参数时返回全部待办",
+    "intents": [
+      "OA办公"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/oa/tasks",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "query_leave_balance",
+    "description": "查询当前用户的年假、病假、事假等假期余额",
+    "intents": [
+      "OA办公"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/oa/leave-balance",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "query_org_structure",
+    "description": "查询企业组织架构，包括部门名称、位置、负责人、人数和职责",
+    "intents": [
+      "企业知识"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/company/org",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "query_company_policy",
+    "description": "查询企业制度和规定，如考勤、请假、报销、加班、晋升等。不提供制度名时返回全部制度列表",
+    "intents": [
+      "企业知识"
+    ],
+    "type": "api",
+    "api_config": {
+      "method": "GET",
+      "url_template": "http://localhost:8000/mock/api/company/policies/{name}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "query_params": [],
+      "body_fields": []
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "制度名称关键词，如考勤、请假、报销。不填则返回全部制度"
+        }
+      },
+      "required": []
+    }
+  }
+]

@@ -1,0 +1,4 @@
+[tool.pyright]
+include = ["system", "scripts"]
+extraPaths = ["."]
+typeCheckingMode = "basic"

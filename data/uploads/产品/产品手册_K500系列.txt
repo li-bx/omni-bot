@@ -1,0 +1,30 @@
+K-500 系列智能控制器技术手册
+
+一、产品概述
+K-500 是新一代模块化智能控制器，搭载 ARM Cortex-A72 处理器，支持多协议通信和边缘 AI 推理。
+
+二、硬件规格
+  - CPU：ARM Cortex-A72 四核 1.8GHz
+  - 内存：4GB LPDDR4
+  - 存储：32GB eMMC + 支持 MicroSD 扩展
+  - 显示：7寸/10寸/15寸工业触摸屏可选
+  - 通信接口：2×RS485, 2×RS232, 2×CAN, 2×以太网, WiFi, 4G/5G
+  - USB：2×USB 3.0, 1×USB Type-C
+  - 电源：DC 24V ±20%
+  - 功耗：典型 15W，最大 25W
+  - 防护等级：前面板 IP65
+  - 工作温度：-20°C 至 +60°C
+  - 安装方式：面板嵌入式 / VESA 支架
+
+三、软件能力
+  - 操作系统：Yocto Linux
+  - 编程环境：支持 IEC 61131-3 (ST/LD/FBD/SFC/IL)
+  - 通信协议：MODBUS TCP/RTU, OPC UA, MQTT, EtherCAT, PROFINET
+  - 边缘 AI：支持 TensorFlow Lite / ONNX Runtime
+  - 远程管理：内置 VPN + 设备管理平台
+
+四、型号对比
+| 型号      | I/O点数 | 以太网 | AI推理 | 价格   |
+| K-500E    | 256     | 2路    | 不支持  | 经济型 |
+| K-500S    | 512     | 2路    | 轻量    | 标准型 |
+| K-500P    | 1024    | 4路    | 全支持  | 旗舰型 |

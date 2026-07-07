@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- 背景圆 -->
+  <circle cx="32" cy="32" r="31" fill="url(#bg)" stroke="#1e3a5f" stroke-width="1"/>
+  <!-- 连线 -->
+  <line x1="32" y1="32" x2="32" y2="11" stroke="rgba(129,140,248,0.5)" stroke-width="1.2"/>
+  <line x1="32" y1="32" x2="12" y2="50" stroke="rgba(129,140,248,0.5)" stroke-width="1.2"/>
+  <line x1="32" y1="32" x2="52" y2="50" stroke="rgba(129,140,248,0.5)" stroke-width="1.2"/>
+  <!-- 外围节点 -->
+  <circle cx="32" cy="11" r="3.5" fill="#A78BFA" opacity="0.9"/>
+  <circle cx="12" cy="50" r="3.5" fill="#818CF8" opacity="0.9"/>
+  <circle cx="52" cy="50" r="3.5" fill="#818CF8" opacity="0.9"/>
+  <!-- 中心光晕 -->
+  <circle cx="32" cy="32" r="12" fill="url(#coreGlow)"/>
+  <!-- 中心节点 -->
+  <circle cx="32" cy="32" r="5" fill="#22D3EE" opacity="0.95"/>
+  <circle cx="32" cy="32" r="2" fill="#fff" opacity="0.6"/>
+  <!-- 旋转环 -->
+  <circle cx="32" cy="32" r="17" fill="none" stroke="#22D3EE" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="54 54" transform="rotate(-20 32 32)"/>
+</svg>
