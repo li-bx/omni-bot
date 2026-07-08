@@ -128,7 +128,7 @@ class ModelRegistry:
                 print(f"BERT 加载失败: {e}，降级为 Embedding 分类")
 
         # 降级：用 Embedding 模型做分类
-        if self._knowledge_base:
+        if self.knowledge_base:
             intent_file = os.path.join(TRAINING_DATA_DIR, "intent_data.json")
             self._embed_intent_classifier = EmbeddingIntentClassifier(
                 self._knowledge_base.embed_model, intent_file,
@@ -308,11 +308,16 @@ class ModelRegistry:
 
     @property
     def intent_classifier(self):
-        """意图分类器：优先BERT，没有则用Embedding降级"""
+        """意图分类器：优先BERT，没有则用Embedding降级。首次访问时自动加载"""
+        if self._intent_classifier is None and self._embed_intent_classifier is None:
+            self.load_intent_model()
         return self._intent_classifier or self._embed_intent_classifier
 
     @property
     def knowledge_base(self):
+        """知识库。首次访问时自动加载 Embedding 模型"""
+        if self._knowledge_base is None:
+            self.load_embedding_model()
         return self._knowledge_base
 
     @property

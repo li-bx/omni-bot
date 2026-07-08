@@ -1,0 +1,30 @@
+<div id="panel-docs" class="panel" x-show="activePanel === 'docs'" x-cloak>
+  <div class="card">
+    <h3>上传文档</h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">按领域分类上传，如 产品、销售、售后。相同领域文档放入同一分类。</p>
+    <form class="form-row" hx-post="/ui/docs/upload" hx-encoding="multipart/form-data"
+          hx-target="#docList" hx-swap="innerHTML" hx-on::after-request="this.reset()">
+      <select name="domain" id="docDomain" style="width:120px"
+              hx-get="/ui/domains" hx-trigger="refreshDomains from:body, load once" hx-swap="innerHTML">
+        <option value="">选择领域</option>
+      </select>
+      <input name="new_domain" placeholder="或输入新领域名称" style="width:150px">
+      <input type="file" name="file" accept=".txt,.md,.json" style="flex:2" required>
+      <button class="btn btn-primary" type="submit">上传</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">已上传文档</h3>
+      <form hx-post="/ui/docs/add-to-kb" hx-target="#docList" hx-swap="innerHTML" hx-include=".doc-cb:checked"
+            hx-on::before-request="if(!document.querySelector('.doc-cb:checked')){event.preventDefault();toast('请先勾选文档','error');}">
+        <button class="btn btn-success btn-sm" type="submit" id="btnAddToKB">📥 增量加入知识库</button>
+      </form>
+    </div>
+    <div id="docList" style="margin-top:12px"
+         hx-get="/ui/docs" hx-trigger="refreshDocs from:body, load once" hx-swap="innerHTML">
+      <span style="color:var(--text-muted)">加载中...</span>
+    </div>
+  </div>
+</div>

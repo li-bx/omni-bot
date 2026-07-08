@@ -1,0 +1,7 @@
+{# System Prompt 编辑区，由 GET /ui/samples/{intent}/prompt 返回 #}
+<textarea id="intentPrompt" style="min-height:120px;width:100%"
+          placeholder="输入 System Prompt…"
+          hx-put="/ui/samples/{{ intent | e }}/prompt"
+          hx-trigger="blur delay:500ms"
+          hx-swap="none">{{ val | e }}</textarea>
+<span id="promptSaved" style="margin-left:8px;font-size:13px;color:var(--success);display:none">已保存 ✓</span>

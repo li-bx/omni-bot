@@ -1,0 +1,31 @@
+{# 用户列表，由 GET /ui/users 返回 #}
+{% if not users %}
+<span style="color:var(--text-muted)">暂无用户</span>
+{% else %}
+<table style="width:100%;border-collapse:collapse;font-size:13px">
+  <thead>
+    <tr style="border-bottom:2px solid var(--border);text-align:left">
+      <th style="padding:8px">用户名</th><th style="padding:8px">显示名</th><th style="padding:8px">角色</th>
+      <th style="padding:8px">状态</th><th style="padding:8px">创建时间</th><th style="padding:8px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+    <tr style="border-bottom:1px solid var(--border-light)">
+      <td style="padding:8px"><strong>{{ u['username'] | e }}</strong></td>
+      <td style="padding:8px">{{ u.get('display_name', '') | e }}</td>
+      <td style="padding:8px"><span class="tag tag-purple">{{ u.get('role_name', '') | e }}</span></td>
+      <td style="padding:8px"><span class="tag tag-{{ 'green' if u.get('enabled') else 'red' }}">{{ '启用' if u.get('enabled') else '禁用' }}</span></td>
+      <td style="padding:8px;color:var(--text-muted);font-size:12px">{{ u.get('created_at', '') | e }}</td>
+      <td style="padding:8px">
+        <button class="btn btn-sm btn-outline"
+                hx-get="/ui/users/{{ u['username'] | e }}/form" hx-target="body" hx-swap="beforeend">编辑</button>
+        <button class="btn btn-sm btn-danger"
+                hx-delete="/ui/users/{{ u['username'] | e }}" hx-target="#userList" hx-swap="innerHTML"
+                hx-confirm="确定删除用户「{{ u['username'] | e }}」？">删除</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}

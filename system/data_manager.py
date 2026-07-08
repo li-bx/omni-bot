@@ -148,13 +148,15 @@ class DataManager:
 
     def upload_document(self, filename: str, content: bytes, domain: str = "通用") -> dict:
         """上传文档到知识库，支持领域分类"""
-        ext = os.path.splitext(filename)[1]
-        doc_id = f"doc_{uuid.uuid4().hex[:8]}_{int(time.time())}"
+        name, ext = os.path.splitext(filename)
+        ts = datetime.now().strftime("%Y%m%d%H%M%S")
+        save_name = f"{name}_{ts}{ext}"
+        doc_id = os.path.splitext(save_name)[0]
 
         # 按领域存放
         domain_dir = os.path.join(UPLOAD_DIR, domain)
         os.makedirs(domain_dir, exist_ok=True)
-        save_path = os.path.join(domain_dir, f"{doc_id}{ext}")
+        save_path = os.path.join(domain_dir, save_name)
 
         with open(save_path, "wb") as f:
             f.write(content)

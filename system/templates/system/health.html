@@ -1,0 +1,27 @@
+{# 系统状态面板，由 GET /ui/health 返回 #}
+<div id="navStatusDots" hx-swap-oob="true">
+  <span class="status-dot-item"><span class="status-pulse {{ 'on' if intent_model else 'off' }}"></span>意图</span>
+  <span class="status-dot-item"><span class="status-pulse {{ 'on' if embedding_model else 'off' }}"></span>检索</span>
+  <span class="status-dot-item"><span class="status-pulse {{ 'on' if kb_chunks > 0 else 'off' }}"></span>知识库</span>
+  <span class="status-dot-item"><span class="status-pulse {{ 'on' if tool_count > 0 else 'off' }}"></span>工具</span>
+</div>
+<div class="metrics" id="metricsGrid">
+  {% for v, l in metrics %}
+  <div class="metric"><div class="value">{{ v | e }}</div><div class="label">{{ l | e }}</div></div>
+  {% endfor %}
+</div>
+<div class="card">
+  <h3>训练任务</h3>
+  <div id="jobList">
+    {% if jobs %}
+    {% for j in jobs %}
+    <div style="padding:9px 0;border-bottom:1px solid var(--border-light);font-size:13px">
+      <span class="tag tag-{{ 'green' if j['status'] == 'completed' else 'red' if j['status'] == 'failed' else 'blue' }}">{{ j['status'] | e }}</span>
+      {{ j.get('type', '') | e }} · {{ j.get('message', '') | e }} · {{ (j.get('progress', 0) * 100) | int }}%
+    </div>
+    {% endfor %}
+    {% else %}
+    <span style="color:var(--text-muted)">无训练任务</span>
+    {% endif %}
+  </div>
+</div>

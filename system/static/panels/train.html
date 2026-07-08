@@ -1,0 +1,26 @@
+<div id="panel-train" class="panel" x-show="activePanel === 'train'" x-cloak>
+  <div class="card">
+    <h3>意图分类模型</h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">基于标注数据训练 BERT 意图分类器</p>
+    <button class="btn btn-primary" id="btnTrainIntent" @click="trainIntent()">开始训练</button>
+    <div style="margin-top:10px"><span id="intentJobStatus" style="font-size:13px"></span></div>
+  </div>
+
+  <div class="card">
+    <h3>Embedding 检索模型 <span style="font-size:11px;color:var(--warning);font-weight:400">（可选）</span></h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">基座模型开箱即用。仅当检索效果不理想时才需微调。</p>
+    <button class="btn btn-outline" id="btnTrainEmbed" @click="trainEmbedding()">开始微调（可选）</button>
+    <div style="margin-top:10px"><span id="embedJobStatus" style="font-size:13px"></span></div>
+  </div>
+
+  <div class="card">
+    <h3>上传文档后</h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">上传/修改知识库文档后，需要重建索引才能被检索到。</p>
+    <button class="btn btn-success" id="btnRebuildKB" @click="rebuildKB()">🔨 重建知识库索引</button>
+    <span id="rebuildStatus" style="font-size:13px;margin-left:10px"></span>
+    <div style="margin-top:14px">
+      <span style="font-size:12px;color:var(--text-muted)">训练了模型后点击重新加载：</span>
+      <button class="btn btn-outline btn-sm" style="margin-left:6px" @click="reloadModels()">重新加载模型</button>
+    </div>
+  </div>
+</div>

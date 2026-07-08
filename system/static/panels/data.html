@@ -1,0 +1,44 @@
+<div id="panel-data" class="panel" x-show="activePanel === 'data'" x-cloak>
+  <div class="card">
+    <h3>意图类别管理</h3>
+    <form class="form-row" hx-post="/ui/intents" hx-target="#intentList" hx-swap="innerHTML"
+          hx-on::after-request="this.reset()" @submit.prevent>
+      <input name="name" placeholder="新意图名称，如：退换货咨询" style="width:200px" required>
+      <button class="btn btn-primary" type="submit">添加意图</button>
+    </form>
+    <div id="intentList">
+      <span style="color:var(--text-muted)">加载中...</span>
+    </div>
+  </div>
+
+  <div class="card" id="sampleCard" style="display:none">
+    <h3 id="sampleTitle">样本管理</h3>
+
+    <!-- Add samples form — uses Alpine for dynamic intent -->
+    <form class="form-row" @submit.prevent="addSamples($event)">
+      <textarea id="sampleTexts" name="texts" placeholder="输入样本，每行一条&#10;如：&#10;怎么退货&#10;我要退款&#10;退货运费谁出"
+                style="min-height:120px;flex:1" required></textarea>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" type="submit">批量添加</button>
+        <button class="btn btn-outline" type="button" id="btnAutoGen" @click="autoGenerate()">LLM自动生成</button>
+      </div>
+    </form>
+
+    <button class="btn btn-success" style="margin-top:8px"
+            hx-post="/ui/data/export" hx-target="#exportStatus" hx-swap="innerHTML">
+      导出训练数据</button>
+    <span id="exportStatus" style="margin-left:8px;font-size:13px"></span>
+
+    <div id="sampleList" style="margin-top:14px;max-height:300px;overflow:auto;padding:10px;">
+      <span style="color:var(--text-muted)">请先选择一个意图</span>
+    </div>
+
+    <h3 style="margin-top:24px">System Prompt 配置</h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">该意图触发时使用的 LLM 系统提示词</p>
+    <div id="promptArea">
+      <textarea id="intentPrompt" style="min-height:120px;width:100%" placeholder="选择意图后编辑 System Prompt…"
+                @blur="savePrompt($event)"></textarea>
+      <span id="promptSaved" style="margin-left:8px;font-size:13px;color:var(--success);display:none">已保存 ✓</span>
+    </div>
+  </div>
+</div>

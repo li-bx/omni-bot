@@ -5,21 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI 数字化智能服务平台</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body>
+<body x-data="appState()" x-init="init()">
 
-<!-- 隐藏表单：吸收浏览器自动填充，防止填入聊天输入框 -->
+<!-- 隐藏表单：吸收浏览器自动填充 -->
 <div style="position:absolute;opacity:0;pointer-events:none;height:0;overflow:hidden" aria-hidden="true">
   <input type="text" name="username" autocomplete="username" tabindex="-1">
   <input type="password" name="password" autocomplete="current-password" tabindex="-1">
 </div>
 
-<!-- ====== 单行导航栏 ====== -->
-<nav class="navbar">
+<!-- ====== 导航栏 ====== -->
+<nav class="navbar" x-data>
   <div class="navbar-inner">
-    <!-- 品牌 + 标语 -->
     <div class="brand">
       <div class="logo">
         <span class="logo-core">
@@ -37,21 +38,29 @@
         <span class="brand-slogan">数智驱动，一键触达全业务</span>
       </div>
     </div>
-    <!-- 导航标签 -->
+
     <div class="nav-tabs">
-      <button class="nav-tab active" data-panel="chat"><span class="nav-icon">💬</span>AI 助手</button>
-      <button class="nav-tab" data-panel="data"><span class="nav-icon">🎯</span>意图训练</button>
-      <button class="nav-tab" data-panel="docs"><span class="nav-icon">📚</span>知识库</button>
-      <button class="nav-tab" data-panel="train"><span class="nav-icon">🔧</span>模型训练</button>
-      <button class="nav-tab" data-panel="tools"><span class="nav-icon">🔗</span>集成配置</button>
-      <button class="nav-tab" data-panel="users"><span class="nav-icon">👥</span>用户管理</button>
-      <button class="nav-tab" data-panel="system"><span class="nav-icon">📡</span>系统状态</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'chat' }" @click="switchPanel('chat')">
+        <span class="nav-icon">💬</span>AI 助手</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'data' }" @click="switchPanel('data')">
+        <span class="nav-icon">🎯</span>意图训练</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'docs' }" @click="switchPanel('docs')">
+        <span class="nav-icon">📚</span>知识库</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'train' }" @click="switchPanel('train')">
+        <span class="nav-icon">🔧</span>模型训练</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'tools' }" @click="switchPanel('tools')">
+        <span class="nav-icon">🔗</span>集成配置</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'users' }" @click="switchPanel('users')">
+        <span class="nav-icon">👥</span>用户管理</button>
+      <button class="nav-tab" :class="{ active: activePanel === 'system' }" @click="switchPanel('system')">
+        <span class="nav-icon">📡</span>系统状态</button>
     </div>
-    <!-- 用户 -->
+
     <div class="nav-right">
       <span class="nav-user">
-        <span id="headerUser" style="cursor:pointer" onclick="showChangePwd()" title="点击修改密码"></span>
-        <a class="logout-link" onclick="doLogout()" title="退出登录">退出</a>
+        <span id="headerUser" style="cursor:pointer" @click="showPwdModal = true" title="点击修改密码"
+              x-text="currentUser ? '👤 ' + currentUser : ''"></span>
+        <a class="logout-link" @click="doLogout()" title="退出登录">退出</a>
       </span>
     </div>
   </div>
@@ -59,227 +68,29 @@
 
 <!-- ====== 主内容区 ====== -->
 <main class="main">
-
-  <!-- 智能对话 -->
-  <div id="panel-chat" class="panel active">
-    <div class="chat-container">
-      <div class="chat-header">
-        <!-- <div class="avatar"></div> -->
-        <div class="info">
-          <h3>AI 企业数字化</h3>
-          <span id="chatModelStatus"></span>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="clearChat()">新对话</button>
-        <span style="font-size:11px;color:var(--text-muted)" id="chatLatency"></span>
-      </div>
-      <div class="chat-body" id="chatBox">
-        <div class="chat-empty" id="chatEmpty">
-          <div class="icon">💬</div>
-          <p style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;font-weight:600">AI 数智驱动，一键触达全业务</p>
-          <!-- <p>16 个意图 · 6 大业务领域 · 意图识别 → RAG检索 → Reranker重排 → LLM生成 · 多轮对话</p> -->
-          <div class="suggestions">
-                            <span onclick="quickAsk('我的待办任务有哪些')">📋 OA办公</span>
-              <span onclick="quickAsk('公司的组织架构是怎样的')">🏢 企业知识</span>
-              <span onclick="quickAsk('X2000-Pro 和 K-500S 有什么区别')">🔍 产品对比</span>
-              <span onclick="quickAsk('批量采购 10 台 X2000 什么价格')">💰 销售报价</span>
-              <span onclick="quickAsk('今年Q2华东区X2000销售额和趋势')">📈 销售图表</span>
-              <span onclick="quickAsk('我们项目现在到什么阶段了')">📊 项目进度</span>
-              <span onclick="quickAsk('设备报 E05 通信超时怎么排查')">🔧 故障报修</span>
-              <span onclick="quickAsk('我们的发票什么时候能开出来')">🧾 发票查询</span>
-              <span onclick="quickAsk('帮我查下供应商有哪些 A 级的')">🏭 供应商管理</span>
-              <span onclick="quickAsk('PO20260601 采购订单货到哪了')">📦 采购订单</span>
-              <span onclick="quickAsk('产品保修期是多久怎么延保')">🛡️ 售后政策</span>
-              <span onclick="quickAsk('合同里的违约责任条款怎么约定')">📋 合同条款</span>
-              <span onclick="quickAsk('我要退货已经收到货了怎么操作')">🔄 退换货</span>
-            </div>
-        </div>
-      </div>
-      <div class="chat-footer">
-        <div class="chat-input-row">
-          <input id="chatInput" placeholder="输入问题，Enter 发送… 支持 OA / 产品 / 销售 / 售后 / 项目 / 财务 / 采购 / 合同 / 企业知识 等领域" autocomplete="off" onkeyup="if(event.key==='Enter') sendChat()">
-          <button id="btnSend" onclick="sendChat()">发送</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 训练数据 -->
-  <div id="panel-data" class="panel">
-    <div class="card">
-      <h3>意图类别管理</h3>
-      <div class="form-row">
-        <input id="newIntentName" placeholder="新意图名称，如：退换货咨询" style="width:200px">
-        <button class="btn btn-primary" onclick="addIntent()">添加意图</button>
-      </div>
-      <div class="intent-list" id="intentList"></div>
-    </div>
-    <div class="card" id="sampleCard" style="display:none">
-      <h3 id="sampleTitle">样本管理</h3>
-      <div class="form-row">
-        <textarea id="sampleTexts" placeholder="输入样本，每行一条&#10;如：&#10;怎么退货&#10;我要退款&#10;退货运费谁出" style="min-height:120px;flex:1"></textarea>
-      </div>
-      <button class="btn btn-primary" onclick="addSamples()">批量添加</button>
-      <button class="btn btn-outline" style="margin-left:8px" onclick="autoGenerate()">LLM自动生成</button>
-      <button class="btn btn-success" style="margin-left:8px" onclick="exportData()">导出训练数据</button>
-      <div id="sampleList" style="margin-top:14px;max-height:300px;overflow:auto;padding:10px;"></div>
-      <h3 style="margin-top:24px">System Prompt 配置</h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">该意图触发时使用的 LLM 系统提示词</p>
-      <textarea id="intentPrompt" style="min-height:120px;width:100%" placeholder="输入 System Prompt…"></textarea>
-      <button class="btn btn-primary" style="margin-top:8px" onclick="savePrompt()">保存 Prompt</button>
-      <span id="promptSaved" style="margin-left:8px;font-size:13px;color:var(--success);display:none">已保存 ✓</span>
-    </div>
-  </div>
-
-  <!-- 知识库 -->
-  <div id="panel-docs" class="panel">
-    <div class="card">
-      <h3>上传文档</h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">按领域分类上传，如 产品、销售、售后。相同领域文档放入同一分类。</p>
-      <div class="form-row">
-        <select id="docDomain" style="width:120px"><option value="">选择领域</option></select>
-        <input id="newDomain" placeholder="或输入新领域名称" style="width:150px">
-        <input type="file" id="docFile" accept=".txt,.md,.json" style="flex:2">
-        <button class="btn btn-primary" onclick="uploadDoc()">上传</button>
-      </div>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">已上传文档</h3>
-        <button class="btn btn-success btn-sm" onclick="addSelectedToKB()" id="btnAddToKB">📥 增量加入知识库</button>
-      </div>
-      <div id="docList" style="margin-top:12px">加载中...</div>
-    </div>
-  </div>
-
-  <!-- 模型训练 -->
-  <div id="panel-train" class="panel">
-    <div class="card">
-      <h3>意图分类模型</h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">基于标注数据训练 BERT 意图分类器</p>
-      <button class="btn btn-primary" id="btnTrainIntent" onclick="trainIntent()">开始训练</button>
-      <div style="margin-top:10px"><span id="intentJobStatus" style="font-size:13px"></span></div>
-    </div>
-    <div class="card">
-      <h3>Embedding 检索模型 <span style="font-size:11px;color:var(--warning);font-weight:400">（可选）</span></h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">基座模型开箱即用。仅当检索效果不理想时才需微调。</p>
-      <button class="btn btn-outline" id="btnTrainEmbed" onclick="trainEmbedding()">开始微调（可选）</button>
-      <div style="margin-top:10px"><span id="embedJobStatus" style="font-size:13px"></span></div>
-    </div>
-    <div class="card">
-      <h3>上传文档后</h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">上传/修改知识库文档后，需要重建索引才能被检索到。</p>
-      <button class="btn btn-success" id="btnRebuildKB" onclick="rebuildKB()">🔨 重建知识库索引</button>
-      <span id="rebuildStatus" style="font-size:13px;margin-left:10px"></span>
-      <div style="margin-top:14px">
-        <span style="font-size:12px;color:var(--text-muted)">训练了模型后点击重新加载：</span>
-        <button class="btn btn-outline btn-sm" style="margin-left:6px" onclick="reloadModels()">重新加载模型</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 工具管理 -->
-  <div id="panel-tools" class="panel">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">🔗 API 工具配置</h3>
-        <div>
-          <button class="btn btn-primary btn-sm" onclick="showToolForm()">+ 添加工具</button>
-          <button class="btn btn-outline btn-sm" style="margin-left:8px" onclick="reloadTools()">刷新</button>
-        </div>
-      </div>
-      <p style="font-size:12px;color:var(--text-muted);margin-top:6px">为不同意图配置 API 调用工具。LLM 会自动判断是否调用工具获取实时数据。</p>
-    </div>
-    <div class="card" id="toolListCard"><div id="toolList" style="font-size:13px">加载中...</div></div>
-    <div class="card" id="toolFormCard" style="display:none">
-      <h3 id="toolFormTitle">添加工具</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div><label>工具名称 *</label><input id="tfName" placeholder="如: query_order_status" style="width:100%"></div>
-        <div><label>工具类型</label><select id="tfType" style="width:100%" onchange="onToolTypeChange()"><option value="api">API 调用</option></select></div>
-      </div>
-      <div style="margin-top:14px"><label>描述 *</label><input id="tfDesc" placeholder="描述工具功能" style="width:100%"></div>
-      <div style="margin-top:14px"><label>API 方法</label><select id="tfMethod" style="width:120px"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select></div>
-      <div style="margin-top:14px"><label>URL 模板</label><input id="tfUrl" placeholder="如: http://localhost:8000/mock/api/orders/{order_id}" style="width:100%"></div>
-      <div style="margin-top:14px"><label>关联意图</label><div id="tfIntents" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div></div>
-      <div style="margin-top:14px"><label>请求头 (JSON)</label><textarea id="tfHeaders" style="min-height:60px;font-family:monospace;font-size:12px;width:100%"></textarea></div>
-      <div style="margin-top:14px"><label>参数定义 (JSON Schema)</label><textarea id="tfParams" style="min-height:100px;font-family:monospace;font-size:12px;width:100%"></textarea></div>
-      <div style="margin-top:16px;display:flex;align-items:center;gap:10px">
-        <button class="btn btn-primary" onclick="saveTool()">保存工具</button>
-        <button class="btn btn-outline" onclick="hideToolForm()">取消</button>
-        <span id="toolSavedMsg" style="font-size:13px;color:var(--success);display:none">已保存 ✓</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 系统状态 -->
-  <div id="panel-system" class="panel">
-    <div class="metrics" id="metricsGrid"></div>
-    <div class="card"><h3>训练任务</h3><div id="jobList">无活跃任务</div></div>
-  </div>
-
-  <!-- 用户管理 -->
-  <div id="panel-users" class="panel">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">👤 用户管理</h3>
-        <button class="btn btn-primary btn-sm" onclick="showAddUserForm()">+ 添加用户</button>
-      </div>
-      <div id="userList" style="margin-top:14px;font-size:13px">加载中...</div>
-    </div>
-    <div class="card" id="userFormCard" style="display:none">
-      <h3 id="userFormTitle">添加用户</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div><label>用户名 *</label><input id="ufUsername" placeholder="登录用户名" style="width:100%"></div>
-        <div><label>显示名称</label><input id="ufDisplayName" placeholder="如：张三" style="width:100%"></div>
-        <div><label>密码 *</label><input id="ufPassword" type="password" placeholder="新密码" style="width:100%"></div>
-        <div><label>角色</label><select id="ufRole" style="width:100%"></select></div>
-      </div>
-      <div style="margin-top:14px;display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="saveUser()">保存</button>
-        <button class="btn btn-outline" onclick="hideUserForm()">取消</button>
-      </div>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">🔑 角色管理</h3>
-        <div style="display:flex;gap:8px">
-          <input id="newRoleName" placeholder="新角色名称" style="width:150px">
-          <button class="btn btn-primary btn-sm" onclick="addRole()">添加角色</button>
-        </div>
-      </div>
-      <div id="roleList" style="margin-top:14px;font-size:13px">加载中...</div>
-    </div>
-    <div class="card" id="rolePermCard" style="display:none">
-      <h3 id="rolePermTitle">工具权限</h3>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">勾选该角色可以调用的 API 工具。未勾选的工具不会出现在 LLM Function Calling 中。</p>
-      <div id="rolePermCheckboxes" style="display:flex;flex-wrap:wrap;gap:10px"></div>
-      <div style="margin-top:16px">
-        <button class="btn btn-primary" onclick="saveRolePermissions()">保存权限</button>
-        <span id="rolePermSaved" style="margin-left:10px;font-size:13px;color:var(--success);display:none">已保存 ✓</span>
-      </div>
-    </div>
-  </div>
-
+  <!-- PANELS -->
 </main>
 
-<!-- 修改密码弹窗 -->
-<div id="pwdModal" class="modal-overlay" style="display:none" onclick="if(event.target===this) hideChangePwd()">
+<!-- ====== 修改密码弹窗 ====== -->
+<div class="modal-overlay" x-show="showPwdModal" x-cloak
+     @click.self="showPwdModal = false" @keyup.escape="showPwdModal = false">
   <div class="modal-card">
     <h3 style="margin-bottom:16px">🔒 修改密码</h3>
     <div style="margin-bottom:12px">
       <label>当前密码</label>
-      <input id="pwdOld" type="password" placeholder="输入当前密码" style="width:100%">
+      <input type="password" x-model="pwdOld" placeholder="输入当前密码" style="width:100%">
     </div>
     <div style="margin-bottom:12px">
       <label>新密码</label>
-      <input id="pwdNew" type="password" placeholder="输入新密码" style="width:100%">
+      <input type="password" x-model="pwdNew" placeholder="输入新密码" style="width:100%">
     </div>
     <div style="margin-bottom:16px">
       <label>确认新密码</label>
-      <input id="pwdConfirm" type="password" placeholder="再次输入新密码" style="width:100%">
+      <input type="password" x-model="pwdConfirm" placeholder="再次输入新密码" style="width:100%">
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" onclick="changePwd()">确认修改</button>
-      <button class="btn btn-outline" onclick="hideChangePwd()">取消</button>
+      <button class="btn btn-primary" @click="changePwd()">确认修改</button>
+      <button class="btn btn-outline" @click="showPwdModal = false">取消</button>
     </div>
   </div>
 </div>

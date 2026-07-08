@@ -1,0 +1,41 @@
+<div id="panel-chat" class="panel" x-show="activePanel === 'chat'" x-cloak
+     x-transition:enter="panelIn 0.3s ease">
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="info">
+        <h3>AI 企业数字化</h3>
+        <span id="chatModelStatus"></span>
+      </div>
+      <button class="btn btn-outline btn-sm" @click="clearChat()">新对话</button>
+      <span style="font-size:11px;color:var(--text-muted)" id="chatLatency"></span>
+    </div>
+
+    <div class="chat-body" id="chatBox"
+         hx-get="/ui/chat/empty" hx-trigger="load once" hx-swap="innerHTML">
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted)">
+        加载中...
+      </div>
+    </div>
+
+    <!-- Thinking indicator (HTMX managed) -->
+    <div id="chatThinking" class="htmx-indicator" style="padding:0 22px 8px">
+      <div class="chat-msg assistant thinking">
+        <div class="avatar-sm">🤖</div>
+        <div class="body"><div class="bubble"><div class="thinking-dots"><span></span><span></span><span></span></div></div></div>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <form id="chatForm" class="chat-input-row" hx-post="/ui/chat" hx-target="#chatBox" hx-swap="beforeend"
+            hx-indicator="#chatThinking"
+            hx-on::before-request="appendUserMessage(document.getElementById('chatInput').value);document.getElementById('chatEmpty')?.remove();this.reset()"
+            @submit.prevent>
+        <input type="hidden" name="session_id" id="chatSessionId" :value="sessionId">
+        <input id="chatInput" name="text" placeholder="输入问题，Enter 发送…" autocomplete="off">
+        <button type="submit" id="btnSend">发送</button>
+        <button type="button" id="btnStop" class="btn-stop"
+                onclick="stopChatRequest()">⏹ 停止</button>
+      </form>
+    </div>
+  </div>
+</div>

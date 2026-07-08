@@ -1,0 +1,21 @@
+<div id="panel-tools" class="panel" x-show="activePanel === 'tools'" x-cloak>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">🔗 API 工具配置</h3>
+      <div>
+        <button class="btn btn-primary btn-sm"
+                hx-get="/ui/tools/form" hx-target="body" hx-swap="beforeend">+ 添加工具</button>
+        <button class="btn btn-outline btn-sm" style="margin-left:8px"
+                hx-post="/ui/tools/reload" hx-target="#toolList" hx-swap="innerHTML">刷新</button>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:6px">为不同意图配置 API 调用工具。LLM 会自动判断是否调用工具获取实时数据。</p>
+  </div>
+
+  <div class="card" id="toolListCard">
+    <div id="toolList" style="font-size:13px"
+         hx-get="/ui/tools" hx-trigger="refreshTools from:body, load once" hx-swap="innerHTML">
+      加载中...
+    </div>
+  </div>
+</div>

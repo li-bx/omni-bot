@@ -1,0 +1,28 @@
+{# 工具列表，由 GET /ui/tools 返回 #}
+{% if not tools %}
+<span style="color:var(--text-muted)">还没有配置工具。点击"+ 添加工具"创建第一个 API 调用工具。</span>
+{% else %}
+{% for t in tools %}
+<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-light)">
+  <div style="flex:1">
+    <div style="font-weight:600;margin-bottom:2px">
+      <span class="tag tag-{{ 'green' if (t.get('api_config',{}).get('method','GET')) == 'GET' else 'blue' }}">{{ (t.get('api_config',{}) or {}).get('method', 'GET') | e }}</span>
+      {{ t['name'] | e }}
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary)">{{ t.get('description', '') | e }}</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:2px">
+      意图: {{ ', '.join(t.get('intents', []) or ['未关联']) | e }} |
+      URL: {{ ((t.get('api_config', {}) or {}).get('url_template', ''))[:60] | e }}{% if ((t.get('api_config', {}) or {}).get('url_template', '')|length) > 60 %}...{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:4px;flex-shrink:0;margin-left:12px">
+    <button class="btn btn-sm btn-outline"
+      hx-get="/ui/tools/{{ t['name'] | e }}" hx-target="body" hx-swap="beforeend"
+      hx-on::before-request="document.getElementById('toolFormOverlay')?.remove()">编辑</button>
+    <button class="btn btn-sm btn-danger"
+      hx-delete="/ui/tools/{{ t['name'] | e }}" hx-target="#toolList" hx-swap="innerHTML"
+      hx-confirm="确定删除工具「{{ t['name'] | e }}」？">删除</button>
+  </div>
+</div>
+{% endfor %}
+{% endif %}

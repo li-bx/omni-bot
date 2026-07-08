@@ -1,0 +1,17 @@
+{# 空聊天欢迎页 + 建议快捷问句，由 GET /ui/chat/empty 返回 #}
+<div class="chat-empty" id="chatEmpty">
+  <div class="icon">💬</div>
+  <p style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;font-weight:600">AI 数智驱动，一键触达全业务</p>
+  <div class="suggestions">
+    {% for item in suggestions %}
+    <span role="button" tabindex="0" hx-post="/ui/chat"
+          hx-vals='{{ item.hx_vals | safe }}'
+          hx-include="#chatSessionId"
+          hx-target="#chatBox" hx-swap="beforeend" hx-indicator="#chatThinking"
+          hx-on::before-request="appendUserMessage(this.getAttribute('data-text'))"
+          hx-on::after-request="this.closest('.chat-empty')?.remove()"
+          data-text="{{ item.text | e }}"
+          class="suggestion-tag">{{ item.icon }} {{ item.label | e }}</span>
+    {% endfor %}
+  </div>
+</div>

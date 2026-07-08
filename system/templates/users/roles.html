@@ -1,0 +1,23 @@
+{# 角色列表，由 GET /ui/roles 返回 #}
+{% if not roles %}
+<span style="color:var(--text-muted)">暂无角色</span>
+{% else %}
+{% for r in roles %}
+<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-light)">
+  <div style="flex:1">
+    <strong>{{ r['name'] | e }}</strong>
+    <span style="color:var(--text-muted);font-size:12px;margin-left:8px">{{ r.get('description', '') | e }}</span>
+    <span class="tag tag-blue" style="margin-left:8px">{{ r['tool_count'] }} 个工具权限</span>
+  </div>
+  <div style="display:flex;gap:4px">
+    <button class="btn btn-sm btn-outline"
+            hx-get="/ui/roles/{{ r['name'] | e }}/permissions"
+            hx-target="body" hx-swap="beforeend"
+            hx-on::before-request="document.getElementById('rolePermOverlay')?.remove()">工具权限</button>
+    <button class="btn btn-sm btn-danger"
+            hx-delete="/ui/roles/{{ r['name'] | e }}" hx-target="#roleList" hx-swap="innerHTML"
+            hx-confirm="确定删除角色「{{ r['name'] | e }}」？">删除</button>
+  </div>
+</div>
+{% endfor %}
+{% endif %}

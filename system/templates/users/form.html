@@ -1,0 +1,44 @@
+{# 用户添加/编辑表单，由 GET /ui/users/form 或 GET /ui/users/{username}/form 返回 #}
+<div class="modal-overlay" id="userFormOverlay"
+     onclick="if(event.target===this)this.remove()" onkeydown="if(event.key==='Escape')this.remove()">
+  <div class="modal-card" id="userFormCard">
+
+    <h3 id="userFormTitle">{% if user %}编辑用户 · {{ user['username'] | e }}{% else %}添加用户{% endif %}</h3>
+
+    <form hx-{% if user %}put{% else %}post{% endif %}="/ui/users{% if user %}/{{ user['username'] | e }}{% endif %}"
+          hx-target="#userList" hx-swap="innerHTML"
+          hx-on::after-request="document.getElementById('userFormOverlay').remove()">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div><label>用户名{% if not user %} *{% endif %}</label>
+          {% if user %}
+          <input value="{{ user['username'] | e }}" disabled style="width:100%">
+          {% else %}
+          <input name="username" placeholder="登录用户名" style="width:100%" required autocomplete="off">
+          {% endif %}
+        </div>
+        <div><label>显示名称{% if not user %} *{% endif %}</label>
+          <input name="display_name" placeholder="如：张三" style="width:100%"
+                 value="{% if user %}{{ user.get('display_name', '') | e }}{% endif %}"
+                 {% if not user %}required{% endif %}></div>
+        <div><label>{% if user %}新密码（留空不修改）{% else %}密码 *{% endif %}</label>
+          <input name="password" type="password"
+                 placeholder="{% if user %}留空不修改{% else %}新密码{% endif %}" style="width:100%"
+                 {% if not user %}required autocomplete="new-password"{% endif %}></div>
+        <div><label>角色{% if not user %} *{% endif %}</label>
+          <select name="role_name" style="width:100%" {% if not user %}required{% endif %}>
+            {% if not user %}<option value="" disabled selected>请选择角色</option>{% endif %}
+            {% for r in roles %}
+            <option value="{{ r['name'] | e }}" {% if user and r['name'] == user.get('role_name') %}selected{% endif %}>{{ r['name'] | e }}</option>
+            {% endfor %}
+          </select></div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:10px">
+        <button class="btn btn-primary" type="submit">保存</button>
+        <button class="btn btn-outline" type="button" onclick="document.getElementById('userFormOverlay').remove()">取消</button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+{# 助手消息气泡，由 POST /ui/chat 返回（用户消息已由前端乐观渲染） #}
+<div class="chat-msg assistant" id="lastAssistantMsg">
+  <div class="avatar-sm">🤖</div>
+  <div class="body">
+    <div class="bubble"><div class="md-content">{{ rendered_reply | safe }}</div></div>
+    <div class="meta-row">
+      <button class="btn-copy" data-raw="{{ reply | e }}" onclick="copyMsg(this)" title="复制内容">📋 复制</button>
+      <span class="tag tag-amber">🎯 {{ intent | e }}</span>
+      {% if source == "tool_calling" %}
+      <span class="tag tag-purple">🔧 Function Call</span>
+      {% elif source == "knowledge_base" %}
+      <span class="tag tag-purple">📚 RAG检索</span>
+      {% else %}
+      <span class="tag tag-gray">💬 直接回复</span>
+      {% endif %}
+      {% for tc in tool_call_log %}
+      <span class="tag tag-purple" title="参数: {{ tc.get('arguments', '') | e }}">🔧 {{ tc.get('tool', '?') | e }}</span>
+      {% endfor %}
+      <span class="tag tag-gray">⚡ {{ latency_ms | int }}ms</span>
+    </div>
+  </div>
+</div>

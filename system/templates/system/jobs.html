@@ -1,0 +1,11 @@
+{# 训练任务列表，由 GET /ui/jobs 返回 #}
+{% if not jobs %}
+<span style="color:var(--text-muted)">无训练任务</span>
+{% else %}
+{% for j in jobs %}
+<div style="padding:9px 0;border-bottom:1px solid var(--border-light);font-size:13px">
+  <span class="tag tag-{{ 'green' if j['status'] == 'completed' else 'red' if j['status'] == 'failed' else 'blue' }}">{{ j['status'] | e }}</span>
+  {{ j.get('type', '') | e }} · {{ j.get('message', '') | e }} · {{ (j.get('progress', 0) * 100) | int }}%
+</div>
+{% endfor %}
+{% endif %}

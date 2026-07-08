@@ -1,0 +1,16 @@
+<div id="panel-system" class="panel" x-show="activePanel === 'system'" x-cloak>
+  <div id="systemHealthArea"
+       hx-get="/ui/health" hx-trigger="refreshHealth from:body, load once, every 15s"
+       hx-swap="outerHTML">
+    <div class="metrics" id="metricsGrid">
+      <div class="metric"><div class="value">--</div><div class="label">加载中...</div></div>
+    </div>
+    <div class="card">
+      <h3>训练任务</h3>
+      <div id="jobList"
+           hx-get="/ui/jobs" hx-trigger="refreshJobs from:body, every 10s" hx-swap="innerHTML">
+        <span style="color:var(--text-muted)">无训练任务</span>
+      </div>
+    </div>
+  </div>
+</div>

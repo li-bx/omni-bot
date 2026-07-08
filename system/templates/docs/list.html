@@ -1,0 +1,21 @@
+{# 文档列表，由 GET /ui/docs 返回 #}
+{% if not docs %}
+<span style="color:var(--text-muted)">暂无文档，请上传产品手册等内容</span>
+{% else %}
+{% for d in docs %}
+<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center">
+  <span>
+    <input type="checkbox" class="doc-cb" name="filename" value="{{ d.get('filename', d['name']) | e }}"
+           {% if d.get('filename', d['name']) in indexed %}checked disabled{% endif %}
+           style="margin-right:8px">
+    <span class="tag tag-{{ 'gray' if d.get('domain') in (None, '通用') else 'blue' }}">{{ d.get('domain', '通用') | e }}</span>
+    {{ d['name'] | e }}
+    <span style="color:var(--text-muted);font-size:11px">{{ (d['size'] / 1024) | round(1) }}KB</span>
+    {% if d.get('filename', d['name']) in indexed %}<span class="tag tag-green">已索引</span>{% endif %}
+  </span>
+  <span style="color:var(--danger);cursor:pointer;font-size:12px"
+        hx-delete="/ui/docs/{{ d['id'] }}" hx-target="#docList" hx-swap="innerHTML"
+        hx-confirm="确定删除文档「{{ d['name'] | e }}」？">删除</span>
+</div>
+{% endfor %}
+{% endif %}

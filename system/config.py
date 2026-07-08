@@ -4,6 +4,18 @@
 import os
 import re
 
+# 加载 .env 文件（优先级低于系统环境变量）
+from dotenv import load_dotenv
+import logging
+logger = logging.getLogger(__name__)
+
+_env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+if os.path.isfile(_env_path):
+    load_dotenv(_env_path)
+    logger.info("已加载 .env 配置文件")
+else:
+    logger.debug("未找到 .env 文件，跳过（可手动 export 环境变量）")
+
 # 项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

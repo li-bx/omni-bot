@@ -130,13 +130,13 @@ body::before {
 @keyframes logoSpin { to { transform: rotate(360deg); } }
 .brand-text { display: flex; flex-direction: column; gap: 0; line-height: 1.1; }
 .brand-title {
-  font-size: 13px; font-weight: 700;
+  font-size: 15px; font-weight: 700;
   background: linear-gradient(135deg, #E0E7FF, #C4B5FD);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .brand-slogan {
-  font-size: 11px; font-weight: 500;
+  font-size: 12px; font-weight: 500;
   background: linear-gradient(135deg, #A5B4FC, #C4B5FD);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -149,9 +149,9 @@ body::before {
   flex: 1; justify-content: center;
 }
 .nav-tab {
-  padding: 7px 12px; border-radius: 7px;
+  padding: 7px 14px; border-radius: 7px;
   background: none; border: none; cursor: pointer;
-  font-size: 12px; font-weight: 500;
+  font-size: 13px; font-weight: 500;
   color: var(--text-secondary);
   display: flex; align-items: center; gap: 5px;
   transition: all 0.25s ease;
@@ -162,7 +162,7 @@ body::before {
   color: #fff; background: rgba(99,102,241,0.2);
   box-shadow: 0 0 10px rgba(99,102,241,0.15);
 }
-.nav-tab .nav-icon { font-size: 14px; transition: transform 0.2s; }
+.nav-tab .nav-icon { font-size: 15px; transition: transform 0.2s; }
 .nav-tab:hover .nav-icon,
 .nav-tab.active .nav-icon { transform: scale(1.15); }
 
@@ -192,7 +192,7 @@ body::before {
   50% { box-shadow: 0 0 10px rgba(16,185,129,0.8); }
 }
 .nav-user {
-  font-size: 12px; color: var(--text-secondary);
+  font-size: 13px; color: var(--text-secondary);
   display: flex; align-items: center; gap: 8px;
 }
 .nav-user strong { color: #E2E8F0; }
@@ -235,15 +235,32 @@ body::before {
 }
 
 /* ================================================================
-   Panel Visibility
+   Alpine / HTMX
    ================================================================ */
 
-.panel { display:none; }
-.panel.active { display:block; animation: panelIn 0.3s ease; }
+[x-cloak] { display: none !important; }
+
+/* ================================================================
+   Panel Visibility — controlled by Alpine x-show
+   ================================================================ */
+
 @keyframes panelIn {
   from { opacity:0; transform: translateY(8px); }
   to { opacity:1; transform: translateY(0); }
 }
+
+/* HTMX indicator — hidden by default, shown during requests */
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator { display: block; }
+.htmx-request.htmx-indicator { display: block; }
+
+/* Stop button — hidden by default, shown via JS during chat requests */
+#btnStop { display: none; }
+.btn-stop {
+  background: var(--danger); color: #fff; border: none; border-radius: 8px;
+  padding: 8px 16px; cursor: pointer; font-size: 14px; align-items: center; gap: 4px;
+}
+.htmx-request .btn-copy { opacity: 0.5; }
 
 /* ================================================================
    Buttons
@@ -382,14 +399,17 @@ label { font-size: 12px; font-weight: 600; color: var(--text-secondary); display
 .suggestions {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 620px;
 }
-.suggestions span {
+.suggestion-tag {
+  display: inline-block;
   padding: 8px 16px;
   background: rgba(99,102,241,0.08);
   border: 1px solid rgba(99,102,241,0.2);
   border-radius: 20px; font-size: 12px; cursor: pointer;
   color: var(--text-secondary); transition: all 0.2s; font-weight: 500;
+  font-family: inherit; line-height: inherit;
+  user-select: none;
 }
-.suggestions span:hover {
+.suggestion-tag:hover {
   border-color: var(--primary);
   background: rgba(99,102,241,0.2);
   color: #E2E8F0;
@@ -572,17 +592,41 @@ th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
   to { opacity:1; transform: scale(1) translateY(0); }
 }
 
+.tool-form-card {
+  width: 680px; max-width: 92vw;
+}
+.tool-form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.tool-form-field {
+  margin-top: 8px;
+}
+.tool-form-field label {
+  display: block; font-size: 13px; margin-bottom: 2px; color: var(--text-secondary);
+}
+.tool-json-input {
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 12px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15,23,42,0.6);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
 /* ================================================================
    Responsive
    ================================================================ */
 
 @media (max-width: 900px) {
   .navbar-inner { padding: 0 12px; height: 46px; }
-  .brand-title { font-size: 11px; }
+  .brand-title { font-size: 12px; }
   .brand-slogan { display: none; }
   .navbar .brand .logo { width: 28px; height: 28px; font-size: 11px; }
-  .nav-tab { padding: 5px 8px; font-size: 11px; gap: 3px; }
-  .nav-tab .nav-icon { font-size: 13px; }
+  .nav-tab { padding: 5px 8px; font-size: 12px; gap: 3px; }
+  .nav-tab .nav-icon { font-size: 14px; }
   .navbar .brand { margin-right: 8px; }
   .navbar .nav-right { margin-left: 8px; }
   .main { padding: 14px 12px 48px; }
@@ -591,9 +635,9 @@ th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
 }
 
 @media (max-width: 600px) {
-  .brand-title { font-size: 10px; }
-  .nav-tab { padding: 4px 5px; font-size: 10px; gap: 2px; }
-  .nav-tab .nav-icon { font-size: 12px; }
-  .nav-user { font-size: 10px; }
+  .brand-title { font-size: 11px; }
+  .nav-tab { padding: 4px 5px; font-size: 11px; gap: 2px; }
+  .nav-tab .nav-icon { font-size: 13px; }
+  .nav-user { font-size: 11px; }
   .chat-msg .body { max-width: 88%; }
 }

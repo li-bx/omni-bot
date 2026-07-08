@@ -1,0 +1,74 @@
+{# 工具添加/编辑表单，由 GET /ui/tools/form 或 GET /ui/tools/{name} 返回 #}
+<div class="modal-overlay" id="toolFormOverlay"
+     onclick="if(event.target===this)this.remove()" onkeydown="if(event.key==='Escape')this.remove()">
+  <div class="modal-card tool-form-card" id="toolFormCard">
+
+    <h3 id="toolFormTitle">{% if tool %}编辑工具 · {{ tool['name'] | e }}{% else %}添加工具{% endif %}</h3>
+
+    <form hx-{% if tool %}put{% else %}post{% endif %}="/ui/tools{% if tool %}/{{ tool['name'] | e }}{% endif %}"
+          hx-target="#toolList" hx-swap="innerHTML"
+          hx-on::after-request="document.getElementById('toolFormOverlay').remove()">
+
+      {# 第一行：名称 + 类型 #}
+      <div class="tool-form-row">
+        <div><label>工具名称 *</label>
+          <input name="name" placeholder="如: query_order_status" style="width:100%"
+                 value="{% if tool %}{{ tool.get('name', '') | e }}{% endif %}" required></div>
+        <div><label>工具类型</label>
+          <select name="type" style="width:100%">
+            <option value="api" selected>API 调用</option>
+          </select></div>
+      </div>
+
+      {# 描述 #}
+      <div class="tool-form-field"><label>描述 *</label>
+        <input name="description" placeholder="描述工具功能" style="width:100%"
+               value="{% if tool %}{{ tool.get('description', '') | e }}{% endif %}" required></div>
+
+      {# API 方法 + URL 模板 #}
+      <div class="tool-form-row">
+        <div><label>API 方法</label>
+          <select name="method" style="width:100%">
+            {% set cur_method = (tool.get('api_config', {}) or {}).get('method', 'GET') if tool else 'GET' %}
+            {% for m in ['GET', 'POST', 'PUT', 'DELETE'] %}
+            <option{% if m == cur_method %} selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select></div>
+        <div><label>URL 模板</label>
+          <input name="url_template" placeholder="如: http://localhost:8000/mock/api/orders/{{order_id}}" style="width:100%"
+                 value="{% if tool %}{{ ((tool.get('api_config', {}) or {}).get('url_template', '')) | e }}{% endif %}"></div>
+      </div>
+
+      {# 关联意图 #}
+      <div class="tool-form-field"><label>关联意图</label>
+        <div id="tfIntents" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+          {% for n in all_intents %}
+          <label style="font-size:12px;cursor:pointer;padding:5px 12px;border:1px solid var(--border);
+                        border-radius:16px;display:inline-flex;align-items:center;gap:5px;
+                        {% if tool and n in sel_intents %}background:rgba(99,102,241,0.2);border-color:var(--primary);color:var(--primary){% endif %}">
+            <input type="checkbox" name="intent" value="{{ n | e }}" style="margin:0"
+                   {% if tool and n in sel_intents %}checked{% endif %}> {{ n | e }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# 请求头 #}
+      <div class="tool-form-field"><label>请求头 (JSON)</label>
+        <textarea name="headers" class="tool-json-input" style="min-height:50px"
+                  placeholder='{"Content-Type": "application/json"}'>{% if tool %}{{ headers_json | e }}{% else %}{"Content-Type": "application/json"}{% endif %}</textarea></div>
+
+      {# 参数定义 #}
+      <div class="tool-form-field"><label>参数定义 (JSON Schema)</label>
+        <textarea name="parameters" class="tool-json-input" style="min-height:70px"
+                  placeholder='{"type": "object", "properties": {}, "required": []}'>{% if tool %}{{ params_json | e }}{% else %}{"type": "object", "properties": {}, "required": []}{% endif %}</textarea></div>
+
+      {# 按钮 #}
+      <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary" type="submit">保存工具</button>
+        <button class="btn btn-outline" type="button" onclick="document.getElementById('toolFormOverlay').remove()">取消</button>
+      </div>
+
+    </form>
+  </div>
+</div>

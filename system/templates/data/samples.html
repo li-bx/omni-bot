@@ -1,0 +1,23 @@
+{# 样本列表，由 GET /ui/samples/{intent} 返回 #}
+{% if not samples %}
+<span style="color:var(--text-muted)">暂无样本</span>
+{% else %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+  <span style="font-size:12px;color:var(--text-muted)">共 {{ total }} 条</span>
+  <span>
+    <button class="btn btn-sm btn-outline" onclick="toggleSelectAllSamples()">全选</button>
+    <button class="btn btn-sm btn-danger" style="margin-left:4px"
+            hx-delete="/ui/samples/{{ intent | e }}"
+            hx-include=".sample-cb:checked" hx-target="#sampleList" hx-swap="innerHTML"
+            hx-confirm="确定删除选中的样本？">批量删除</button>
+  </span>
+</div>
+{% for s in samples %}
+<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border-light);align-items:center">
+  <span><input type="checkbox" class="sample-cb" name="idx" value="{{ s['index'] }}" style="margin-right:8px">{{ s['text'] | e }}</span>
+  <span style="color:var(--danger);cursor:pointer;flex-shrink:0;font-size:12px"
+        hx-delete="/ui/samples/{{ intent | e }}?idx={{ s['index'] }}"
+        hx-target="#sampleList" hx-swap="innerHTML">删除</span>
+</div>
+{% endfor %}
+{% endif %}

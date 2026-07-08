@@ -1,0 +1,19 @@
+{# 意图 chip 列表，由 GET /ui/intents 返回 #}
+{% if not intents %}
+<span style="color:var(--text-muted)">还没有意图类别，在上方添加</span>
+{% else %}
+<div class="intent-list" id="intentList">
+  {% for i in intents %}
+  <span class="intent-chip"
+        x-data x-on:click="$dispatch('select-intent', {name: '{{ i['name'] | e }}'})"
+        :class="selectedIntent === '{{ i['name'] | e }}' ? 'intent-chip selected' : 'intent-chip'"
+        style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+    <span>{{ i['name'] | e }} <span style="color:var(--text-muted)">{{ i['count'] }}</span></span>
+    <span hx-delete="/ui/intents/{{ i['name'] | e }}"
+          hx-target="#intentList" hx-swap="innerHTML"
+          hx-confirm="确定删除意图「{{ i['name'] | e }}」及其所有样本？"
+          title="删除意图" style="cursor:pointer;color:var(--text-muted);font-size:15px;line-height:1">&times;</span>
+  </span>
+  {% endfor %}
+</div>
+{% endif %}
