@@ -280,7 +280,7 @@ async def generate_samples_ui(request: Request, intent: str):
             return HTMLResponse('<span style="color:var(--danger)">需要先手动添加 5-10 条种子样本</span>')
 
         seeds_str = "\n".join(f"- {t}" for t in existing_texts[:10])
-        prompt = f"""以下是一些 AI 企业数字化"{intent}"意图的问句示例：
+        prompt = f"""以下是一些 AI 企业数智化"{intent}"意图的问句示例：
 
 {seeds_str}
 

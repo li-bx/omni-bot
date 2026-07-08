@@ -1,6 +1,6 @@
 {# 助手消息气泡，由 POST /ui/chat 返回（用户消息已由前端乐观渲染） #}
 <div class="chat-msg assistant" id="lastAssistantMsg">
-  <div class="avatar-sm">🤖</div>
+  <div><img src="/static/favicon.svg" alt="AI" width="20" height="20"></div>
   <div class="body">
     <div class="bubble"><div class="md-content">{{ rendered_reply | safe }}</div></div>
     <div class="meta-row">

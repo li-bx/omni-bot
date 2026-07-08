@@ -87,7 +87,7 @@ async def auto_generate_samples(intent: str, count: int = 30):
         return {"ok": False, "error": f"意图 '{intent}' 还没有样本，请先手动添加 5-10 条种子"}
 
     seeds_str = "\n".join(f"- {t}" for t in existing_texts[:10])
-    prompt = f"""以下是一些 AI 企业数字化"{intent}"意图的问句示例：
+    prompt = f"""以下是一些 AI 企业数智化"{intent}"意图的问句示例：
 
 {seeds_str}
 

@@ -1,5 +1,5 @@
 """
-智能 AI 企业数字化系统 — 统一入口
+智能 AI 企业数智化系统 — 统一入口
 启动：python -m system.main
 访问：http://localhost:8000/docs
 
@@ -24,7 +24,7 @@ from .shared import dm, tm, registry, tool_manager
 from . import auth_db
 
 # ---- 应用初始化 ----
-app = FastAPI(title="AI 企业数字化系统", version="2.0.0")
+app = FastAPI(title="AI 企业数智化系统", version="2.0.0")
 
 _STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 _TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
